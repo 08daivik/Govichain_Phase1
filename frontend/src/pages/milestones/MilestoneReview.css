@@ -1,0 +1,130 @@
+.milestone-review-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.review-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.milestone-details h2,
+.action-panel h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row .label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex: 0 0 200px;
+}
+
+.detail-row .value {
+  flex: 1;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.detail-row .value.amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+
+.action-panel {
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.action-panel p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btn-large {
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.info-message {
+  padding: 16px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.info-message p {
+  margin: 0;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.guidelines {
+  padding: 20px;
+  background: var(--light-bg);
+  border-radius: 8px;
+}
+
+.guidelines h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.guidelines ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.guidelines li {
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.guidelines li:before {
+  content: '• ';
+  color: var(--primary-blue);
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+@media (max-width: 968px) {
+  .review-container {
+    grid-template-columns: 1fr;
+  }
+
+  .action-panel {
+    position: static;
+  }
+}

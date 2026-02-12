@@ -1,0 +1,15 @@
+.pending-reviews-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pending-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--warning-yellow);
+  color: #92400e;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
