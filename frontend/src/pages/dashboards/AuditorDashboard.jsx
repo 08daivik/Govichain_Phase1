@@ -4,6 +4,12 @@ import { useAuth } from '../../context/AuthContext';
 import { dashboardAPI, milestonesAPI } from '../../services/api';
 import StatsCard from '../../components/StatsCard';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import {
+  Clock,
+  ClipboardCheck,
+  CheckCircle,
+  AlertTriangle
+} from 'lucide-react';
 import './AuditorDashboard.css';
 
 const AuditorDashboard = () => {
@@ -17,6 +23,7 @@ const AuditorDashboard = () => {
   const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
+
       const [myStatsRes, pendingRes] = await Promise.all([
         dashboardAPI.getMyStats(),
         milestonesAPI.filterByStatus('PENDING'),
@@ -47,47 +54,56 @@ const AuditorDashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <div>
-          <h1>Welcome back, {user?.username}! 🔍</h1>
+          <h1>Welcome back, {user?.username}.</h1>
           <p>Review milestones and ensure compliance.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate('/milestones/pending')}>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate('/milestones/pending')}
+        >
           View Pending Reviews
         </button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats */}
       <div className="stats-grid">
         <StatsCard
           title="Pending Reviews"
           value={myStats?.pending_reviews || 0}
-          icon="⏳"
+          icon={<Clock size={26} />}
           color="yellow"
         />
+
         <StatsCard
           title="Total Reviewed"
           value={myStats?.total_reviewed || 0}
-          icon="📋"
+          icon={<ClipboardCheck size={26} />}
           color="blue"
         />
+
         <StatsCard
           title="Approved"
           value={myStats?.approved || 0}
-          icon="✅"
+          icon={<CheckCircle size={26} />}
           color="green"
         />
+
         <StatsCard
           title="Flagged"
           value={myStats?.flagged || 0}
-          icon="🚩"
+          icon={<AlertTriangle size={26} />}
           color="red"
         />
       </div>
 
-      {/* Pending Reviews */}
+      {/* Pending Table */}
       <div className="section">
         <div className="section-header">
           <h2>Pending Milestone Reviews</h2>
-          <button className="btn btn-outline" onClick={() => navigate('/milestones/pending')}>
+          <button
+            className="btn btn-outline"
+            onClick={() => navigate('/milestones/pending')}
+          >
             View All
           </button>
         </div>
@@ -101,7 +117,7 @@ const AuditorDashboard = () => {
                   <th>Project ID</th>
                   <th>Amount</th>
                   <th>Created</th>
-                  <th>Actions</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -109,15 +125,27 @@ const AuditorDashboard = () => {
                   <tr key={milestone.id}>
                     <td>
                       <strong>{milestone.title}</strong>
-                      <p className="milestone-desc">{milestone.description}</p>
+                      <p className="milestone-desc">
+                        {milestone.description}
+                      </p>
                     </td>
                     <td>{milestone.project_id}</td>
-                    <td><strong>{formatCurrency(milestone.requested_amount)}</strong></td>
-                    <td>{new Date(milestone.created_at).toLocaleDateString()}</td>
+                    <td>
+                      <strong>
+                        {formatCurrency(milestone.requested_amount)}
+                      </strong>
+                    </td>
+                    <td>
+                      {new Date(
+                        milestone.created_at
+                      ).toLocaleDateString()}
+                    </td>
                     <td>
                       <button
                         className="btn btn-sm btn-primary"
-                        onClick={() => navigate(`/milestones/review/${milestone.id}`)}
+                        onClick={() =>
+                          navigate(`/milestones/review/${milestone.id}`)
+                        }
                       >
                         Review
                       </button>
@@ -129,7 +157,7 @@ const AuditorDashboard = () => {
           </div>
         ) : (
           <div className="empty-state">
-            <p>✅ No pending reviews at the moment!</p>
+            <p>No pending reviews at the moment.</p>
           </div>
         )}
       </div>

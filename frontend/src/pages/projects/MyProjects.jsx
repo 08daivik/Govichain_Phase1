@@ -31,7 +31,7 @@ const MyProjects = () => {
       <div className="page-header">
         <h1>My Projects</h1>
         <button className="btn btn-primary" onClick={() => navigate('/projects/create')}>
-          ➕ Create New Project
+          Create New Project
         </button>
       </div>
 

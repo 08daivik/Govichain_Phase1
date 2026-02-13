@@ -1,9 +1,15 @@
-import React, { useState, useEffect,useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardAPI, milestonesAPI } from '../../services/api';
 import StatsCard from '../../components/StatsCard';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import {
+  Target,
+  CheckCircle,
+  Clock,
+  IndianRupee
+} from 'lucide-react';
 import './ContractorDashboard.css';
 
 const ContractorDashboard = () => {
@@ -17,6 +23,7 @@ const ContractorDashboard = () => {
   const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
+
       const [myStatsRes, milestonesRes] = await Promise.all([
         dashboardAPI.getMyStats(),
         milestonesAPI.getMyMilestones(),
@@ -30,10 +37,14 @@ const ContractorDashboard = () => {
       setLoading(false);
     }
   }, []);
-  
+
   useEffect(() => {
     loadDashboardData();
   }, [loadDashboardData]);
+
+  const formatCurrency = (amount) => {
+    return `₹${amount.toLocaleString('en-IN')}`;
+  };
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -44,10 +55,6 @@ const ContractorDashboard = () => {
     return badges[status] || 'badge-info';
   };
 
-  const formatCurrency = (amount) => {
-    return `₹${amount.toLocaleString('en-IN')}`;
-  };
-
   if (loading) {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
@@ -56,47 +63,56 @@ const ContractorDashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <div>
-          <h1>Welcome back, {user?.username}! 👷</h1>
+          <h1>Welcome back, {user?.username}.</h1>
           <p>Track your milestones and project progress.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate('/milestones/create')}>
-          ➕ Create New Milestone
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate('/milestones/create')}
+        >
+          Create New Milestone
         </button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats */}
       <div className="stats-grid">
         <StatsCard
           title="Total Milestones"
           value={myStats?.total_milestones || 0}
-          icon="🎯"
+          icon={<Target size={26} />}
           color="blue"
         />
+
         <StatsCard
           title="Approved"
           value={myStats?.approved_milestones || 0}
-          icon="✅"
+          icon={<CheckCircle size={26} />}
           color="green"
         />
+
         <StatsCard
           title="Pending Review"
           value={myStats?.pending_milestones || 0}
-          icon="⏳"
+          icon={<Clock size={26} />}
           color="yellow"
         />
+
         <StatsCard
           title="Total Approved Amount"
           value={formatCurrency(myStats?.total_approved_amount || 0)}
-          icon="💰"
+          icon={<IndianRupee size={26} />}
           color="green"
         />
       </div>
 
-      {/* Recent Milestones */}
+      {/* Table */}
       <div className="section">
         <div className="section-header">
           <h2>Recent Milestones</h2>
-          <button className="btn btn-outline" onClick={() => navigate('/milestones/my-milestones')}>
+          <button
+            className="btn btn-outline"
+            onClick={() => navigate('/milestones/my-milestones')}
+          >
             View All
           </button>
         </div>
@@ -117,15 +133,27 @@ const ContractorDashboard = () => {
                   <tr key={milestone.id}>
                     <td>
                       <strong>{milestone.title}</strong>
-                      <p className="milestone-desc">{milestone.description}</p>
+                      <p className="milestone-desc">
+                        {milestone.description}
+                      </p>
                     </td>
-                    <td>{formatCurrency(milestone.requested_amount)}</td>
                     <td>
-                      <span className={`badge ${getStatusBadge(milestone.status)}`}>
+                      {formatCurrency(milestone.requested_amount)}
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${getStatusBadge(
+                          milestone.status
+                        )}`}
+                      >
                         {milestone.status}
                       </span>
                     </td>
-                    <td>{new Date(milestone.created_at).toLocaleDateString()}</td>
+                    <td>
+                      {new Date(
+                        milestone.created_at
+                      ).toLocaleDateString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -133,8 +161,11 @@ const ContractorDashboard = () => {
           </div>
         ) : (
           <div className="empty-state">
-            <p>📭 No milestones yet. Create your first milestone to get started!</p>
-            <button className="btn btn-primary" onClick={() => navigate('/milestones/create')}>
+            <p>No milestones yet.</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/milestones/create')}
+            >
               Create Milestone
             </button>
           </div>

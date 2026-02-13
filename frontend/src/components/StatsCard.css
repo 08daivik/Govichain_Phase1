@@ -7,7 +7,6 @@
   gap: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
-  border-left: 4px solid transparent;
 }
 
 .stats-card:hover {
@@ -15,47 +14,15 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.stats-card.blue {
-  border-left-color: var(--secondary-blue);
-}
-
-.stats-card.green {
-  border-left-color: var(--success-green);
-}
-
-.stats-card.yellow {
-  border-left-color: var(--warning-yellow);
-}
-
-.stats-card.red {
-  border-left-color: var(--danger-red);
-}
-
 .stats-icon {
-  font-size: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
-  background: var(--light-bg);
-}
-
-.stats-card.blue .stats-icon {
-  background: #dbeafe;
-}
-
-.stats-card.green .stats-icon {
-  background: #d1fae5;
-}
-
-.stats-card.yellow .stats-icon {
-  background: #fef3c7;
-}
-
-.stats-card.red .stats-icon {
-  background: #fee2e2;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: #f1f5f9;
+  color: var(--primary-blue);
 }
 
 .stats-content {

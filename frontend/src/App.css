@@ -22,5 +22,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: radial-gradient(
+      circle at 20% 30%,
+      rgba(30, 58, 138, 0.4),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(59, 130, 246, 0.3),
+      transparent 40%
+    ),
+    #0f172a;
 }

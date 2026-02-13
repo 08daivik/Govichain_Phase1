@@ -6,6 +6,7 @@ import StatsCard from '../../components/StatsCard';
 import ProjectCard from '../../components/ProjectCard';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Folder, ClipboardList, IndianRupee, Clock } from 'lucide-react';
 import './GovernmentDashboard.css';
 
 const GovernmentDashboard = () => {
@@ -66,47 +67,51 @@ const GovernmentDashboard = () => {
     },
   ] : [];
 
-  const COLORS = ['#3b82f6', '#f59e0b', '#10b981'];
+ const COLORS = ['#1e3a8a', '#2563eb', '#0ea5e9', '#64748b'];
 
   return (
     <div className="dashboard">
       <div className="dashboard-header">
         <div>
-          <h1>Welcome back, {user?.username}! 👋</h1>
+          <h1>Welcome back, {user?.username}.</h1>
           <p>Here's what's happening with your projects today.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate('/projects/create')}>
-          ➕ Create New Project
-        </button>
-      </div>
+          <button className="btn btn-primary" onClick={() => navigate('/projects/create')}>
+             Create New Project
+          </button>
+        </div>
 
       {/* Stats Cards */}
       <div className="stats-grid">
-        <StatsCard
-          title="Total Projects"
-          value={stats?.total_projects || 0}
-          icon="📁"
-          color="blue"
-        />
-        <StatsCard
-          title="My Projects"
-          value={myStats?.projects_created || 0}
-          icon="📋"
-          color="green"
-        />
-        <StatsCard
-          title="Total Budget Allocated"
-          value={`₹${((myStats?.total_budget_allocated || 0) / 10000000).toFixed(1)}Cr`}
-          icon="💰"
-          color="yellow"
-          subtitle={`₹${(myStats?.total_budget_allocated || 0).toLocaleString('en-IN')}`}
-        />
-        <StatsCard
-          title="Pending Approvals"
-          value={stats?.pending_approvals || 0}
-          icon="⏳"
-          color="red"
-        />
+      <StatsCard
+        title="Total Projects"
+        value={stats?.total_projects || 0}
+        icon={<Folder size={32} strokeWidth={1.8} />}
+        color="blue"
+      />
+
+      <StatsCard
+        title="My Projects"
+        value={myStats?.projects_created || 0}
+        icon={<ClipboardList size={32} strokeWidth={1.8} />}
+        color="green"
+      />
+
+      <StatsCard
+        title="Total Budget Allocated"
+        value={`₹${((myStats?.total_budget_allocated || 0) / 10000000).toFixed(1)}Cr`}
+        icon={<IndianRupee size={32} strokeWidth={1.8} />}
+        color="yellow"
+        subtitle={`₹${(myStats?.total_budget_allocated || 0).toLocaleString('en-IN')}`}
+      />
+
+      <StatsCard
+        title="Pending Approvals"
+        value={stats?.pending_approvals || 0}
+        icon={<Clock size={32} strokeWidth={1.8} />}
+        color="red"
+      />
+
       </div>
 
       {/* Charts Section */}
@@ -117,13 +122,17 @@ const GovernmentDashboard = () => {
               <h3>Project Status Overview</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    wrapperStyle={{ fontSize: '12px', color: '#64748b' }}
+                  />
                   <Pie
                     data={projectStatusData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
+                    outerRadius={85}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -142,14 +151,24 @@ const GovernmentDashboard = () => {
               <h3>Budget Overview (₹ Crores)</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={budgetData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis tickFormatter={(value) => `₹${(value / 10000000).toFixed(1)}Cr`} />
+                  <CartesianGrid stroke="#e2e8f0" vertical={false} />
+                  <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tickFormatter={(value) => `₹${(value / 10000000).toFixed(1)}Cr`}
+                  tick={{ fontSize: 12, fill: '#64748b' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
                   <Tooltip formatter={(value) => `₹${(value / 10000000).toFixed(2)} Cr`} />
                   <Legend />
-                  <Bar dataKey="Allocated" fill="#3b82f6" />
-                  <Bar dataKey="Requested" fill="#f59e0b" />
-                  <Bar dataKey="Approved" fill="#10b981" />
+                <Bar dataKey="Allocated" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Requested" fill="#f59e0b" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="Approved" fill="#10b981" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -174,7 +193,7 @@ const GovernmentDashboard = () => {
           </div>
         ) : (
           <div className="empty-state">
-            <p>📭 No projects yet. Create your first project to get started!</p>
+            <p>No projects yet. Create your first project to get started!</p>
             <button className="btn btn-primary" onClick={() => navigate('/projects/create')}>
               Create Project
             </button>

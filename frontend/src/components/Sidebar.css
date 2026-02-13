@@ -1,11 +1,11 @@
 .sidebar {
   width: 260px;
-  background: var(--card-bg);
+  background: #ffffff;
   height: calc(100vh - 70px);
   position: sticky;
   top: 70px;
-  border-right: 1px solid var(--border-color);
-  padding: 24px 0;
+  border-right: 1px solid #e5e7eb;
+  padding: 20px 0;
 }
 
 .sidebar-menu {
@@ -33,8 +33,9 @@
 }
 
 .menu-item.active {
-  background: var(--primary-blue);
-  color: white;
+  background: rgba(30, 58, 138, 0.1);
+  color: var(--primary-blue);
+  font-weight: 600;
 }
 
 .menu-icon {
