@@ -131,9 +131,9 @@ const GovernmentDashboard = () => {
                     data={projectStatusData}
                     cx="50%"
                     cy="50%"
-                    labelLine={false}
-                    outerRadius={85}
-                    fill="#8884d8"
+                    innerRadius={65}
+                    outerRadius={95}
+                    paddingAngle={4}
                     dataKey="value"
                   >
                     {projectStatusData.map((entry, index) => (
