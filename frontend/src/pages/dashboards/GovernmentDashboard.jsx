@@ -5,14 +5,26 @@ import { dashboardAPI, projectsAPI } from '../../services/api';
 import StatsCard from '../../components/StatsCard';
 import ProjectCard from '../../components/ProjectCard';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import { Folder, ClipboardList, IndianRupee, Clock } from 'lucide-react';
 import './GovernmentDashboard.css';
 
 const GovernmentDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [stats, setStats] = useState(null);
   const [myStats, setMyStats] = useState(null);
   const [recentProjects, setRecentProjects] = useState([]);
@@ -24,12 +36,8 @@ const GovernmentDashboard = () => {
       const [statsRes, myStatsRes, projectsRes] = await Promise.all([
         dashboardAPI.getStats(),
         dashboardAPI.getMyStats(),
-        projectsAPI.getMyProjects(),
+        projectsAPI.getMyProjects()
       ]);
-
-      console.log('Stats:', statsRes.data);
-      console.log('My Stats:', myStatsRes.data);
-      console.log('Projects:', projectsRes.data);
 
       setStats(statsRes.data);
       setMyStats(myStatsRes.data);
@@ -49,157 +57,204 @@ const GovernmentDashboard = () => {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
 
-  // Prepare chart data
-  const projectStatusData = stats?.project_status ? 
-    Object.entries(stats.project_status)
-      .filter(([_, value]) => value > 0)
-      .map(([name, value]) => ({
-        name: name.replace('_', ' '),
-        value: value
-      })) : [];
+  // -------- DATA PREP --------
 
-  const budgetData = stats?.budget ? [
-    { 
-      name: 'Budget Overview',
-      Allocated: stats.budget.total_allocated || 0,
-      Requested: stats.budget.total_requested || 0,
-      Approved: stats.budget.total_approved || 0
-    },
-  ] : [];
+  const totalAllocated = stats?.budget?.total_allocated || 0;
+  const totalRequested = stats?.budget?.total_requested || 0;
+  const totalApproved = stats?.budget?.total_approved || 0;
 
- const COLORS = ['#1e3a8a', '#2563eb', '#0ea5e9', '#64748b'];
+  const budgetUtilization =
+    totalAllocated > 0 ? ((totalApproved / totalAllocated) * 100).toFixed(1) : 0;
+
+  const approvalRate =
+    totalRequested > 0 ? ((totalApproved / totalRequested) * 100).toFixed(1) : 0;
+
+  const projectStatusData = stats?.project_status
+    ? Object.entries(stats.project_status)
+        .filter(([_, value]) => value > 0)
+        .map(([name, value]) => ({
+          name: name.replace('_', ' '),
+          value
+        }))
+    : [];
+
+  const budgetData = [
+    {
+      name: 'Budget',
+      Allocated: totalAllocated,
+      Requested: totalRequested,
+      Approved: totalApproved
+    }
+  ];
+
+  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#64748b'];
 
   return (
     <div className="dashboard">
+
+      {/* HEADER */}
       <div className="dashboard-header">
         <div>
           <h1>Welcome back, {user?.username}.</h1>
-          <p>Here's what's happening with your projects today.</p>
+          <p>Real-time financial and project performance overview.</p>
         </div>
-          <button className="btn btn-primary" onClick={() => navigate('/projects/create')}>
-             Create New Project
-          </button>
-        </div>
-
-      {/* Stats Cards */}
-      <div className="stats-grid">
-      <StatsCard
-        title="Total Projects"
-        value={stats?.total_projects || 0}
-        icon={<Folder size={32} strokeWidth={1.8} />}
-        color="blue"
-      />
-
-      <StatsCard
-        title="My Projects"
-        value={myStats?.projects_created || 0}
-        icon={<ClipboardList size={32} strokeWidth={1.8} />}
-        color="green"
-      />
-
-      <StatsCard
-        title="Total Budget Allocated"
-        value={`₹${((myStats?.total_budget_allocated || 0) / 10000000).toFixed(1)}Cr`}
-        icon={<IndianRupee size={32} strokeWidth={1.8} />}
-        color="yellow"
-        subtitle={`₹${(myStats?.total_budget_allocated || 0).toLocaleString('en-IN')}`}
-      />
-
-      <StatsCard
-        title="Pending Approvals"
-        value={stats?.pending_approvals || 0}
-        icon={<Clock size={32} strokeWidth={1.8} />}
-        color="red"
-      />
-
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate('/projects/create')}
+        >
+          Create New Project
+        </button>
       </div>
 
-      {/* Charts Section */}
-      {(projectStatusData.length > 0 || budgetData.length > 0) && (
-        <div className="charts-section">
-          {projectStatusData.length > 0 && (
-            <div className="chart-card">
-              <h3>Project Status Overview</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Legend
-                    verticalAlign="bottom"
-                    height={36}
-                    wrapperStyle={{ fontSize: '12px', color: '#64748b' }}
-                  />
-                  <Pie
-                    data={projectStatusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={65}
-                    outerRadius={95}
-                    paddingAngle={4}
-                    dataKey="value"
-                  >
-                    {projectStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+      {/* STATS */}
+      <div className="stats-grid">
+        <StatsCard
+          title="Total Projects"
+          value={stats?.total_projects || 0}
+          icon={<Folder size={28} />}
+        />
+        <StatsCard
+          title="My Projects"
+          value={myStats?.projects_created || 0}
+          icon={<ClipboardList size={28} />}
+        />
+        <StatsCard
+          title="Total Allocated"
+          value={`₹${(totalAllocated / 10000000).toFixed(2)} Cr`}
+          subtitle={`₹${totalAllocated.toLocaleString('en-IN')}`}
+          icon={<IndianRupee size={28} />}
+        />
+        <StatsCard
+          title="Pending Approvals"
+          value={stats?.pending_approvals || 0}
+          icon={<Clock size={28} />}
+        />
+      </div>
 
-          {budgetData[0] && (budgetData[0].Allocated > 0 || budgetData[0].Requested > 0) && (
-            <div className="chart-card">
-              <h3>Budget Overview (₹ Crores)</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={budgetData}>
-                  <CartesianGrid stroke="#e2e8f0" vertical={false} />
-                  <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 12, fill: '#64748b' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tickFormatter={(value) => `₹${(value / 10000000).toFixed(1)}Cr`}
-                  tick={{ fontSize: 12, fill: '#64748b' }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                  <Tooltip formatter={(value) => `₹${(value / 10000000).toFixed(2)} Cr`} />
-                  <Legend />
-                <Bar dataKey="Allocated" fill="#3b82f6" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="Requested" fill="#f59e0b" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="Approved" fill="#10b981" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+      {/* HEALTH + DONUT */}
+      <div className="dual-section">
+
+        <div className="health-card">
+        <h3>Project Health</h3>
+
+        <div className="health-top">
+          <div className="health-main-metric">
+            <span className="health-percent">
+              {((stats?.budget?.total_approved || 0) / 
+                (stats?.budget?.total_allocated || 1) * 100).toFixed(1)}%
+            </span>
+            <span className="health-label">Budget Utilized</span>
+          </div>
         </div>
-      )}
 
-      {/* Recent Projects */}
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{
+              width: `${
+                ((stats?.budget?.total_approved || 0) /
+                  (stats?.budget?.total_allocated || 1)) *
+                100
+              }%`,
+            }}
+          />
+        </div>
+
+        <div className="health-grid">
+          <div>
+            <span className="metric-label">Approved</span>
+            <strong>
+              ₹{(stats?.budget?.total_approved || 0).toLocaleString("en-IN")}
+            </strong>
+          </div>
+
+          <div>
+            <span className="metric-label">Requested</span>
+            <strong>
+              ₹{(stats?.budget?.total_requested || 0).toLocaleString("en-IN")}
+            </strong>
+          </div>
+
+          <div>
+            <span className="metric-label">Approval Rate</span>
+            <strong>
+              {(
+                ((stats?.budget?.total_approved || 0) /
+                  (stats?.budget?.total_requested || 1)) *
+                100
+              ).toFixed(1)}
+              %
+            </strong>
+          </div>
+        </div>
+      </div>
+        <div className="chart-card">
+          <h3>Project Status Distribution</h3>
+          <ResponsiveContainer width="100%" height={260}>
+            <PieChart>
+              <Pie
+                data={projectStatusData}
+                cx="50%"
+                cy="50%"
+                innerRadius={70}
+                outerRadius={100}
+                paddingAngle={4}
+                dataKey="value"
+              >
+                {projectStatusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Legend verticalAlign="bottom" height={36} />
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* BAR CHART */}
+      <div className="chart-card">
+        <h3>Budget Overview (₹ Crores)</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={budgetData}
+            margin={{ top: 20, right: 20, left: 40, bottom: 10 }}
+          >
+            <CartesianGrid stroke="#e2e8f0" vertical={false} />
+            <XAxis dataKey="name" />
+            <YAxis width={80} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="Allocated" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="Requested" fill="#f59e0b" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="Approved" fill="#10b981" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+
+        <div className="utilization-text">
+          {budgetUtilization}% of allocated budget has been approved.
+        </div>
+      </div>
+
+      {/* RECENT PROJECTS */}
       <div className="section">
         <div className="section-header">
-          <h2>My Recent Projects</h2>
-          <button className="btn btn-outline" onClick={() => navigate('/projects/my-projects')}>
+          <h2>Recent Projects</h2>
+          <button
+            className="btn btn-outline"
+            onClick={() => navigate('/projects/my-projects')}
+          >
             View All
           </button>
         </div>
 
-        {recentProjects.length > 0 ? (
-          <div className="projects-grid">
-            {recentProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <p>No projects yet. Create your first project to get started!</p>
-            <button className="btn btn-primary" onClick={() => navigate('/projects/create')}>
-              Create Project
-            </button>
-          </div>
-        )}
+        <div className="projects-grid">
+          {recentProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
       </div>
+
     </div>
   );
 };
